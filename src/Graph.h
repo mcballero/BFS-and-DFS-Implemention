@@ -27,6 +27,9 @@ public:
     const std::vector<int>& getNeighbors(int nodeID) const; // const ref doesn't modify graph
     int getNodeCount() const;
     long long getEdgeCount() const;
+
+    //adjacency list getter
+    std::unordered_map<int, std::vector<int>> getAdjacencyList() const;
 };
 
 

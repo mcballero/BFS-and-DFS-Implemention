@@ -4,7 +4,7 @@
 #include "SearchResults.h"
 #include "Graph.h"
 
-class BFS{   
+class BFS{
 public:
     static SearchResults search(const Graph& graph, int start, int target); // call w/o bfs obj
 };

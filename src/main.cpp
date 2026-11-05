@@ -1,12 +1,14 @@
-
 #include "Graph.h"
 #include "BFS.h"
 #include "DFS.h"
 #include "SearchResults.h"
+#include "GraphVisual.h"
 
 #include <iostream>
 #include <limits>
 #include <string>
+#include <fstream>
+#include <sstream>
 
 using namespace std;
 
@@ -44,16 +46,17 @@ void printMenu(const Graph& graph, bool hasStart, int start, bool hasTarget, int
 
     cout << "\n----------------------------------------\n";
     cout << "1. Display Graph Summary\n";
-    cout << "2. Add Node\n";
-    cout << "3. Remove Node\n";
-    cout << "4. Add Edge\n";
-    cout << "5. Remove Edge\n";
-    cout << "6. Set Start Node\n";
-    cout << "7. Set Target Node\n";
+    cout << "2. Load from CSV\n";
+    cout << "3. Add Node\n";
+    cout << "4. Remove Node\n";
+    cout << "5. Add Edge\n";
+    cout << "6. Remove Edge\n";
+    cout << "7. Set Start Node\n";
+    cout << "8. Set Target Node\n";
     cout << "----------------------------------------\n";
-    cout << "8. Run BFS\n";
-    cout << "9. Run DFS\n";
-    cout << "10. Compare BFS vs DFS\n";
+    cout << "9. Run BFS\n";
+    cout << "10. Run DFS\n";
+    cout << "11. Compare BFS vs DFS\n";
     cout << "----------------------------------------\n";
     cout << "0. Exit\n";
 }
@@ -118,6 +121,8 @@ bool validEndpoints(const Graph& graph, bool hasStart, int start, bool hasTarget
 int main() {
 
     Graph graph;
+    SearchResults bfs;
+    SearchResults dfs;
 
     bool hasStart = false;
     bool hasTarget = false;
@@ -139,10 +144,50 @@ int main() {
                 cout << "\nGraph Summary\n";
                 cout << "Total nodes: " << graph.getNodeCount() << '\n';
                 cout << "Total edges: " << graph.getEdgeCount() << '\n';
-                cout << "SFML graph display will be connected here.\n";
+                bfs = BFS::search(graph, start, target);
+                dfs = DFS::search(graph, start, target);
+                GraphVisual::visualizeGraph(graph.getAdjacencyList(), bfs, dfs);
                 break;
 
             case 2: {
+                string path;
+                cout << "Enter the file path: ";
+                cin.ignore();
+                getline(cin, path);
+                ifstream file(path);
+                if (!file.is_open()) {
+                    cout << "Could not open file" << endl;
+                    break;
+                }
+                string row;
+
+                //loop
+                while (getline(file, row)) {
+                    stringstream ss(row);
+                    string vertex;
+
+                    //continue if cell empty
+                    if (!getline(ss, vertex, ',')) {
+                        continue;
+                    }
+
+                    //put vertex in adj list
+                    int vertexVal = stoi(vertex);
+                    graph.addNode(vertexVal);
+
+                    while (getline(ss, vertex, ',')) {
+                        if (vertex.empty()) {
+                            continue;
+                        }
+                        int neighbor = stoi(vertex);
+                        graph.addEdge(vertexVal, neighbor);
+                    }
+                }
+                file.close();
+                break;
+            }
+
+            case 3: {
                 int node = getInteger("Enter node ID: ");
 
                 if (graph.addNode(node))
@@ -153,7 +198,7 @@ int main() {
                 break;
             }
 
-            case 3: {
+            case 4: {
                 int node = getInteger("Enter node ID to remove: ");
 
                 if (graph.removeNode(node)) {
@@ -168,7 +213,7 @@ int main() {
                 break;
             }
 
-            case 4: {
+            case 5: {
                 int first = getInteger("Enter first node: ");
                 int second = getInteger("Enter second node: ");
 
@@ -180,7 +225,7 @@ int main() {
                 break;
             }
 
-            case 5: {
+            case 6: {
                 int first = getInteger("Enter first node: ");
                 int second = getInteger("Enter second node: ");
 
@@ -192,7 +237,7 @@ int main() {
                 break;
             }
 
-            case 6: {
+            case 7: {
                 int node = getInteger("Enter start node: ");
 
                 if (graph.hasNode(node)) {
@@ -206,7 +251,7 @@ int main() {
                 break;
             }
 
-            case 7: {
+            case 8: {
                 int node = getInteger("Enter target node: ");
 
                 if (graph.hasNode(node)) {
@@ -220,24 +265,24 @@ int main() {
                 break;
             }
 
-            case 8:
+            case 9:
                 if (validEndpoints(graph, hasStart, start, hasTarget, target)) {
                     printResults("BFS", BFS::search(graph, start, target));
                 }
                 break;
 
-            case 9:
+            case 10:
                 if (validEndpoints(graph, hasStart, start, hasTarget, target)) {
                     printResults("DFS", DFS::search(graph, start, target));
                 }
                 break;
 
-            case 10:
+            case 11:
                 if (validEndpoints(graph, hasStart, start, hasTarget, target)) {
 
-                    SearchResults bfs = BFS::search(graph, start, target);
+                    bfs = BFS::search(graph, start, target);
 
-                    SearchResults dfs = DFS::search(graph, start, target);
+                    dfs = DFS::search(graph, start, target);
 
                     printResults("BFS", bfs);
                     printResults("DFS", dfs);
@@ -272,7 +317,7 @@ int main() {
                 break;
 
             default:
-                cout << "Invalid choice. Select 0 through 10.\n";
+                cout << "Invalid choice. Select 0 through 11.\n";
         }
     }
 

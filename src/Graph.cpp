@@ -117,3 +117,7 @@ long long Graph::getEdgeCount() const {
     }
     return count / 2; // goes over the connections twice so divide result
 }
+
+std::unordered_map<int, vector<int>> Graph::getAdjacencyList() const {
+    return adjacencyList;
+}

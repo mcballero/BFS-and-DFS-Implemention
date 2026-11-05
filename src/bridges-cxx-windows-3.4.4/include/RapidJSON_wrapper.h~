@@ -1,0 +1,4 @@
+#ifndef RAPIDJSON_WRAPPER
+#define RAPIDJSON_WRAPPER
+
+#endif
